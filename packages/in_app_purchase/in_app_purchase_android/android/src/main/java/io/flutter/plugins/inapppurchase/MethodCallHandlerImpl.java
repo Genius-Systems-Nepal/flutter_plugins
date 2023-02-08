@@ -25,10 +25,13 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchaseHistoryParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.android.billingclient.api.SkuDetails;
@@ -36,6 +39,9 @@ import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import com.google.gson.Gson;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +119,10 @@ class MethodCallHandlerImpl
       case InAppPurchasePlugin.MethodNames.IS_READY:
         isReady(result);
         break;
+      case InAppPurchasePlugin.MethodNames.QUERY_PRODUCT_ASYNC:
+        String productId = call.argument("productId");
+        queryProductAsync(productId, result);
+        break;
       case InAppPurchasePlugin.MethodNames.START_CONNECTION:
         startConnection((int) call.argument("handle"), result);
         break;
@@ -183,6 +193,41 @@ class MethodCallHandlerImpl
     }
 
     result.success(billingClient.isReady());
+  }
+
+  private void queryProductAsync(String productId, MethodChannel.Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+    List<QueryProductDetailsParams.Product> queryProductDetailsParamsProductList =
+            Collections.singletonList(QueryProductDetailsParams
+                    .Product
+                    .newBuilder()
+                    .setProductType(BillingClient.ProductType.SUBS)
+            .setProductId(productId)
+            .build());
+
+    QueryProductDetailsParams queryProductDetailsParams =
+            QueryProductDetailsParams.newBuilder()
+                    .setProductList(queryProductDetailsParamsProductList)
+                    .build();
+
+    billingClient.queryProductDetailsAsync(queryProductDetailsParams,
+            new ProductDetailsResponseListener() {
+              public void onProductDetailsResponse(
+                      @NonNull BillingResult billingResult,
+                      @NonNull List<ProductDetails> productDetailsList) {
+
+                if (!productDetailsList.isEmpty()) {
+                  Gson gson = new Gson();
+                  String json = gson.toJson(productDetailsList.get(0).getSubscriptionOfferDetails());
+                  result.success(json);
+                } else {
+                  result.error("NOT FOUND", "Product Detail Not Found", null);
+                }
+              }
+            }
+    );
   }
 
   // TODO(garyq): Migrate to new subscriptions API: https://developer.android.com/google/play/billing/migrate-gpblv5

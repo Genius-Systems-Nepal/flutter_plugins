@@ -79,6 +79,18 @@ class BillingClient {
     return ready ?? false;
   }
 
+  /// Get subscription offers and plans list from google play console
+  Future<String> queryProductDetailsAsync(String productId) async {
+    final String? subscriptionDetail = await channel.invokeMethod(
+        'BillingClient#queryProductDetailsAsync(productId)',
+        <String, dynamic>{
+          'productId': productId
+        }
+    );
+
+    return subscriptionDetail ?? '';
+  }
+
   /// Enable the [BillingClientWrapper] to handle pending purchases.
   ///
   /// **Deprecation warning:** it is no longer required to call

@@ -65,6 +65,10 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   Future<bool> isAvailable() =>
       throw UnimplementedError('isAvailable() has not been implemented.');
 
+  /// Get subscription offers and plans list from google play console
+  Future<String> queryProductDetailsAsync(String productId) =>
+      throw UnimplementedError('queryProductDetailsAsync() has not been implemented.');
+
   /// Query product details for the given set of IDs.
   ///
   /// Identifiers in the underlying payment platform, for example, [App Store

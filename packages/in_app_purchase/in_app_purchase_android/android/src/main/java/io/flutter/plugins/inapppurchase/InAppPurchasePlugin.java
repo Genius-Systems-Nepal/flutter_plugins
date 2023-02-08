@@ -28,6 +28,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @VisibleForTesting
   static final class MethodNames {
     static final String IS_READY = "BillingClient#isReady()";
+    static final String QUERY_PRODUCT_ASYNC = "BillingClient#queryProductDetailsAsync(productId)";
     static final String START_CONNECTION =
         "BillingClient#startConnection(BillingClientStateListener)";
     static final String END_CONNECTION = "BillingClient#endConnection()";

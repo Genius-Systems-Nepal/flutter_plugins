@@ -74,6 +74,9 @@ class InAppPurchase implements InAppPurchasePlatformAdditionProvider {
   /// Returns `true` if the payment platform is ready and available.
   Future<bool> isAvailable() => InAppPurchasePlatform.instance.isAvailable();
 
+  /// Get subscription offers and plans list from google play console
+  Future<String> queryProductDetailsAsync(String productId) => InAppPurchasePlatform.instance.queryProductDetailsAsync(productId);
+
   /// Query product details for the given set of IDs.
   ///
   /// Identifiers in the underlying payment platform, for example, [App Store

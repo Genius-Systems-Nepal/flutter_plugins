@@ -73,6 +73,11 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   }
 
   @override
+  Future<String> queryProductDetailsAsync(String productId) async {
+    return billingClient.queryProductDetailsAsync(productId);
+  }
+
+  @override
   Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     List<SkuDetailsResponseWrapper> responses;
